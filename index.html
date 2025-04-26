@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#000000">
+    <title>Portal WiFi - Mamma Mia Eats</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <div class="form-box">
+            <form id="access-form">
+                <div class="logo-container">
+                    <img src="logo.png" alt="Mamma Mia Eats Logo" class="logo">
+                </div>
+
+                <div class="terms-text-display">
+                    <p>Você aceita nosso termo de uso?</p>
+                </div>
+
+                <div class="terms-group">
+                    <a href="#" id="terms-link">Ver Termos de Uso</a>
+                </div>
+
+                <div class="terms-selector">
+                    <label class="radio-button">
+                        <input type="radio" name="terms-choice" value="yes">
+                        <span>Sim</span>
+                    </label>
+                    <label class="radio-button">
+                        <input type="radio" name="terms-choice" value="no">
+                        <span>Não</span>
+                    </label>
+                </div>
+
+                <button type="submit" id="connect-btn" disabled>Conectar ao WI-FI</button>
+                
+                <div class="copyright">
+                    <p>&copy; Mamma Mia Eats (2015 - 2025). Todos os direitos reservados.</p>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal dos Termos de Uso -->
+    <div id="terms-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <div class="terms-text">
+                <h2>Termos de Uso</h2>
+                <p><strong>Última atualização:</strong> 26 de Abril de 2025 04:07:59 UTC</p>
+                
+                <h3>1. TERMOS DE UTILIZAÇÃO DA REDE WIFI</h3>
+                <p>Ao utilizar nossa rede WiFi, você concorda em:</p>
+                <ul>
+                    <li>Não utilizar a rede para atividades ilegais ou não autorizadas</li>
+                    <li>Não compartilhar conteúdo inadequado ou ofensivo</li>
+                    <li>Respeitar os limites de banda e uso estabelecidos</li>
+                    <li>Manter a privacidade e segurança de seus dados pessoais</li>
+                    <li>Não utilizar a rede para spam ou atividades maliciosas</li>
+                </ul>
+
+                <h3>2. POLÍTICA DE DADOS</h3>
+                <p>Nossa política de proteção de dados inclui:</p>
+                <ul>
+                    <li>Registro de dados de uso exclusivamente para fins de segurança</li>
+                    <li>Proteção de dados conforme a Lei Geral de Proteção de Dados (LGPD)</li>
+                    <li>Garantia de não compartilhamento de dados com terceiros</li>
+                </ul>
+
+                <h3>3. CONDIÇÕES DE USO</h3>
+                <p>Condições gerais de utilização do serviço:</p>
+                <ul>
+                    <li>A velocidade da internet está sujeita a variações conforme o uso</li>
+                    <li>O acesso pode ser suspenso em caso de violação dos termos</li>
+                    <li>Não há garantia de disponibilidade ininterrupta do serviço</li>
+                </ul>
+
+                <h3>4. RESPONSABILIDADES DO USUÁRIO</h3>
+                <ul>
+                    <li>O usuário é integralmente responsável por suas ações na rede</li>
+                    <li>A empresa não se responsabiliza por perdas de dados</li>
+                    <li>É dever do usuário manter seus dispositivos seguros</li>
+                </ul>
+
+                <div class="modal-footer">
+                    <button type="button" class="close-btn">Fechar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Popup de Sucesso -->
+    <div id="success-popup" class="success-popup">
+        <div class="success-content">
+            <div class="success-icon">
+                <i class="fas fa-check"></i>
+            </div>
+            <h2>Conectado com Sucesso!</h2>
+            <p class="welcome-text">Bem-vindo à rede Wi-Fi Mamma Mia Eats.</p>
+            <p class="experience-text">Aproveite sua experiência gastronômica!</p>
+            <button id="continue-btn" class="continue-btn">Continuar</button>
+        </div>
+    </div>
+
+    <!-- Popup de Erro -->
+    <div id="error-popup" class="error-popup">
+        <div class="error-content">
+            <div class="error-icon">
+                <i class="fas fa-exclamation-triangle"></i>
+            </div>
+            <h2>Erro de Conexão</h2>
+            <p class="error-message"></p>
+            <button class="error-btn">Tentar Novamente</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
