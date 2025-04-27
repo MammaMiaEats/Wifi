@@ -8,6 +8,8 @@
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
     <title>WiFi Portal - Mamma Mia Eats</title>
+
+    <!-- Estilos -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -16,39 +18,40 @@
     <div class="page-container">
         <div class="content-wrap">
             <div class="form-container">
+
+                <!-- Ícone WiFi -->
                 <div class="wifi-icon">
                     <i class="fas fa-wifi"></i>
                 </div>
-                
+
+                <!-- Logotipo -->
                 <div class="logo-container">
-                    <img src="https://raw.githubusercontent.com/MammaMiaEats/Wifi/main/logo.png.png" alt="Mamma Mia Eats" class="logo-image">
+                    <img src="https://raw.githubusercontent.com/MammaMiaEats/Wifi/main/logo.png" alt="Mamma Mia Eats" class="logo-image">
                 </div>
 
+                <!-- Formulário -->
                 <form id="access-form" method="post">
                     <input type="hidden" name="client_mac" value="{{ client_mac }}">
                     <input type="hidden" name="client_ip" value="{{ client_ip }}">
                     <input type="hidden" name="ap_mac" value="{{ ap_mac }}">
-                    <input type="hidden" name="timestamp" value="2025-04-27 23:24:54">
+                    <input type="hidden" name="timestamp" value="{{ timestamp }}">
                     <input type="hidden" name="username" value="MammaMiaEats">
                     <input type="hidden" name="terms_accepted" id="terms_accepted" value="">
 
                     <div class="terms-section">
                         <p class="terms-text">Para utilizar nossa rede, você precisa aceitar os termos de uso.</p>
-                        
+
                         <div class="terms-options">
                             <button type="button" class="radio-button accept" onclick="selectOption('yes')">
-                                <i class="fas fa-check"></i>
-                                Aceitar
+                                <i class="fas fa-check"></i> Aceitar
                             </button>
                             <button type="button" class="radio-button decline" onclick="selectOption('no')">
-                                <i class="fas fa-times"></i>
-                                Recusar
+                                <i class="fas fa-times"></i> Recusar
                             </button>
                         </div>
 
                         <button type="button" id="terms-link" class="terms-button">
-                            <i class="fas fa-file-contract"></i>
-                            Ler Termos de Uso
+                            <i class="fas fa-file-contract"></i> Ler Termos de Uso
                         </button>
                     </div>
 
@@ -57,12 +60,16 @@
                         <i class="fas fa-arrow-right"></i>
                     </button>
                 </form>
+
             </div>
         </div>
 
+        <!-- Rodapé -->
         <footer class="footer">
             <div class="footer-content">
-                <p class="copyright">&copy; Mamma Mia Eats (2015 - 2025) - Todos os Direitos Reservados</p>
+                <p class="copyright">
+                    &copy; Mamma Mia Eats (2015 - 2025) - Todos os Direitos Reservados
+                </p>
             </div>
         </footer>
     </div>
@@ -70,13 +77,16 @@
     <!-- Modal dos Termos -->
     <div id="terms-modal" class="modal">
         <div class="modal-content">
+
+            <!-- Cabeçalho Modal -->
             <div class="modal-header">
                 <h2><i class="fas fa-file-contract"></i> Termos de Uso</h2>
-                <button class="close-button">
+                <button class="close-button" onclick="closeModal()">
                     <i class="fas fa-times"></i>
                 </button>
             </div>
-            
+
+            <!-- Corpo Modal -->
             <div class="modal-body">
                 <div class="terms-section">
                     <h3><i class="fas fa-wifi"></i> Uso do WiFi</h3>
@@ -134,160 +144,16 @@
                 </div>
             </div>
 
+            <!-- Rodapé Modal -->
             <div class="modal-footer">
-                <button class="modal-button" id="close-terms">
+                <button class="modal-button" id="close-terms" onclick="closeModal()">
                     <i class="fas fa-check"></i> Entendi
                 </button>
             </div>
         </div>
     </div>
 
-    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
-</body>
-</html><!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="theme-color" content="#000000">
-    <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate, proxy-revalidate">
-    <meta http-equiv="Pragma" content="no-cache">
-    <meta http-equiv="Expires" content="0">
-    <title>WiFi Portal - Mamma Mia Eats</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-</head>
-<body>
-    <div class="page-container">
-        <div class="content-wrap">
-            <div class="form-container">
-                <div class="wifi-icon">
-                    <i class="fas fa-wifi"></i>
-                </div>
-                
-                <div class="logo-container">
-                    <img src="https://raw.githubusercontent.com/MammaMiaEats/Wifi/main/logo.png.png" alt="Mamma Mia Eats" class="logo-image">
-                </div>
-
-                <form id="access-form" method="post">
-                    <input type="hidden" name="client_mac" value="{{ client_mac }}">
-                    <input type="hidden" name="client_ip" value="{{ client_ip }}">
-                    <input type="hidden" name="ap_mac" value="{{ ap_mac }}">
-                    <input type="hidden" name="timestamp" value="2025-04-27 23:24:54">
-                    <input type="hidden" name="username" value="MammaMiaEats">
-                    <input type="hidden" name="terms_accepted" id="terms_accepted" value="">
-
-                    <div class="terms-section">
-                        <p class="terms-text">Para utilizar nossa rede, você precisa aceitar os termos de uso.</p>
-                        
-                        <div class="terms-options">
-                            <button type="button" class="radio-button accept" onclick="selectOption('yes')">
-                                <i class="fas fa-check"></i>
-                                Aceitar
-                            </button>
-                            <button type="button" class="radio-button decline" onclick="selectOption('no')">
-                                <i class="fas fa-times"></i>
-                                Recusar
-                            </button>
-                        </div>
-
-                        <button type="button" id="terms-link" class="terms-button">
-                            <i class="fas fa-file-contract"></i>
-                            Ler Termos de Uso
-                        </button>
-                    </div>
-
-                    <button type="submit" id="connect-btn" class="connect-button" disabled>
-                        <span class="button-text">Conectar</span>
-                        <i class="fas fa-arrow-right"></i>
-                    </button>
-                </form>
-            </div>
-        </div>
-
-        <footer class="footer">
-            <div class="footer-content">
-                <p class="copyright">&copy; Mamma Mia Eats (2015 - 2025) - Todos os Direitos Reservados</p>
-            </div>
-        </footer>
-    </div>
-
-    <!-- Modal dos Termos -->
-    <div id="terms-modal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2><i class="fas fa-file-contract"></i> Termos de Uso</h2>
-                <button class="close-button">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            
-            <div class="modal-body">
-                <div class="terms-section">
-                    <h3><i class="fas fa-wifi"></i> Uso do WiFi</h3>
-                    <ul>
-                        <li>Acesso exclusivo para clientes do Mamma Mia Eats</li>
-                        <li>Velocidade: até 50 Mbps (download/upload)</li>
-                        <li>Limite de conexão: 2 horas por sessão</li>
-                        <li>É proibido compartilhar o acesso com terceiros</li>
-                        <li>Uso limitado a 2 dispositivos por usuário</li>
-                    </ul>
-                </div>
-
-                <div class="terms-section">
-                    <h3><i class="fas fa-shield-alt"></i> Segurança</h3>
-                    <ul>
-                        <li>É proibido realizar downloads ilegais</li>
-                        <li>É proibido acessar conteúdo impróprio ou ilegal</li>
-                        <li>É proibido realizar ataques à rede ou outros usuários</li>
-                        <li>É proibido usar VPN ou ferramentas de mascaramento</li>
-                        <li>O usuário é responsável pela segurança do seu dispositivo</li>
-                    </ul>
-                </div>
-
-                <div class="terms-section">
-                    <h3><i class="fas fa-user-shield"></i> Privacidade</h3>
-                    <ul>
-                        <li>Seus dados são protegidos conforme a LGPD</li>
-                        <li>Registros de acesso são mantidos por 6 meses</li>
-                        <li>Dados de navegação não são compartilhados com terceiros</li>
-                        <li>A rede é monitorada para fins de segurança</li>
-                        <li>Cookies são utilizados para melhorar a experiência</li>
-                    </ul>
-                </div>
-
-                <div class="terms-section">
-                    <h3><i class="fas fa-exclamation-triangle"></i> Restrições</h3>
-                    <ul>
-                        <li>Streaming de vídeo limitado a qualidade HD</li>
-                        <li>Downloads limitados a 1GB por sessão</li>
-                        <li>Alguns serviços podem ser bloqueados</li>
-                        <li>O acesso pode ser suspenso em caso de mau uso</li>
-                        <li>A rede pode ser desativada sem aviso prévio</li>
-                    </ul>
-                </div>
-
-                <div class="terms-section">
-                    <h3><i class="fas fa-handshake"></i> Responsabilidades</h3>
-                    <ul>
-                        <li>O usuário é responsável por suas ações na rede</li>
-                        <li>O Mamma Mia Eats não se responsabiliza por perdas de dados</li>
-                        <li>Problemas técnicos podem ocorrer sem aviso prévio</li>
-                        <li>O serviço é fornecido "como está"</li>
-                        <li>Estas regras podem ser alteradas a qualquer momento</li>
-                    </ul>
-                </div>
-            </div>
-
-            <div class="modal-footer">
-                <button class="modal-button" id="close-terms">
-                    <i class="fas fa-check"></i> Entendi
-                </button>
-            </div>
-        </div>
-    </div>
-
+    <!-- Scripts -->
     <script src="{{ url_for('static', filename='js/script.js') }}"></script>
 </body>
 </html>
