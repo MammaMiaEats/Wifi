@@ -230,6 +230,9 @@ body {
 }
 
 .modal-header h2 {
+    display: flex;
+    align-items: center;
+    gap: 10px;
     font-size: 24px;
     color: var(--primary-color);
 }
@@ -253,6 +256,44 @@ body {
     overflow-y: auto;
 }
 
+.modal-body .terms-section {
+    margin-bottom: 30px;
+    text-align: left;
+}
+
+.modal-body .terms-section:last-child {
+    margin-bottom: 0;
+}
+
+.modal-body .terms-section h3 {
+    color: var(--primary-color);
+    font-size: 18px;
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.modal-body .terms-section ul {
+    list-style: none;
+    padding-left: 28px;
+}
+
+.modal-body .terms-section ul li {
+    color: var(--text-secondary);
+    margin-bottom: 10px;
+    position: relative;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.modal-body .terms-section ul li::before {
+    content: '•';
+    color: var(--primary-color);
+    position: absolute;
+    left: -20px;
+}
+
 .modal-footer {
     padding: 20px;
     border-top: 1px solid rgba(255, 255, 255, 0.1);
@@ -267,10 +308,32 @@ body {
     border-radius: var(--radius-md);
     font-weight: 600;
     cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
     transition: var(--transition-normal);
 }
 
 .modal-button:hover {
+    background: #ff7b1a;
+}
+
+/* Scrollbar personalizada */
+.modal-body::-webkit-scrollbar {
+    width: 8px;
+}
+
+.modal-body::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+}
+
+.modal-body::-webkit-scrollbar-thumb {
+    background: var(--primary-color);
+    border-radius: 4px;
+}
+
+.modal-body::-webkit-scrollbar-thumb:hover {
     background: #ff7b1a;
 }
 
@@ -309,5 +372,17 @@ body {
     .modal-content {
         width: 95%;
         margin: 20px auto;
+    }
+
+    .modal-body .terms-section h3 {
+        font-size: 16px;
+    }
+
+    .modal-body .terms-section ul li {
+        font-size: 13px;
+    }
+
+    .modal-header h2 {
+        font-size: 20px;
     }
 }
