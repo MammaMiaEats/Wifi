@@ -1,10 +1,9 @@
 document.addEventListener('DOMContentLoaded', function() {
-    // Configurações
     const CONFIG = {
         app: {
             name: 'Mamma Mia Eats',
             version: '2.0.0',
-            lastUpdate: '2025-04-27 03:13:45',
+            lastUpdate: '2025-04-27 23:08:53',
             author: 'MammaMiaEats'
         },
         urls: {
@@ -12,14 +11,13 @@ document.addEventListener('DOMContentLoaded', function() {
             redirect: 'https://instagram.com/MammaMiaEats'
         },
         timeouts: {
-            connection: 10000,    // 10 segundos para timeout da conexão
-            redirect: 2000,       // 2 segundos antes do redirecionamento
-            animation: 300        // 300ms para animações
+            connection: 10000,
+            redirect: 2000,
+            animation: 300
         },
         maxRetries: 3
     };
 
-    // Elementos do DOM
     const elements = {
         form: document.getElementById('access-form'),
         connectBtn: document.getElementById('connect-btn'),
@@ -27,22 +25,23 @@ document.addEventListener('DOMContentLoaded', function() {
         termsLink: document.getElementById('terms-link'),
         modal: document.getElementById('terms-modal'),
         modalCloseBtn: document.querySelector('.close-button'),
-        modalCloseFooter: document.getElementById('close-terms'),
-        successPopup: document.getElementById('success-popup'),
-        errorPopup: document.getElementById('error-popup'),
-        continueBtn: document.getElementById('continue-btn'),
-        errorRetryBtn: document.querySelector('.error-popup .popup-button'),
-        errorMessage: document.querySelector('.error-message')
+        modalCloseFooter: document.getElementById('close-terms')
     };
 
-    // Estado da aplicação
     const state = {
         isConnecting: false,
         retryCount: 0,
-        termsAccepted: false
+        termsAccepted: false,
+        sessionValid: false
     };
 
-    // Gerenciador de UI
+    // Forçar desconexão inicial
+    fetch('/logout', {
+        method: 'POST',
+        credentials: 'include'
+    }).catch(console.error);
+
+    // Funções UI
     const UI = {
         setLoading: (loading) => {
             const btn = elements.connectBtn;
@@ -55,19 +54,8 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         },
 
-        showPopup: (popup) => {
-            popup.style.display = 'flex';
-            setTimeout(() => popup.classList.add('active'), 10);
-        },
-
-        hidePopup: (popup) => {
-            popup.classList.remove('active');
-            setTimeout(() => popup.style.display = 'none', CONFIG.timeouts.animation);
-        },
-
         showError: (message) => {
-            elements.errorMessage.textContent = message;
-            UI.showPopup(elements.errorPopup);
+            alert(message);
         },
 
         updateButtonState: () => {
@@ -75,33 +63,14 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     };
 
-    // Gerenciador do Modal
-    const Modal = {
-        show: () => {
-            elements.modal.style.display = 'flex';
-            setTimeout(() => elements.modal.classList.add('active'), 10);
-            document.body.style.overflow = 'hidden';
-        },
-
-        hide: () => {
-            elements.modal.classList.remove('active');
-            setTimeout(() => {
-                elements.modal.style.display = 'none';
-                document.body.style.overflow = 'auto';
-            }, CONFIG.timeouts.animation);
-        }
-    };
-
     // Seleção de opção dos termos
     window.selectOption = function(value) {
         elements.termsInput.value = value;
         
-        // Remove classe selected de todos os botões
         document.querySelectorAll('.radio-button').forEach(btn => {
             btn.classList.remove('selected');
         });
         
-        // Adiciona classe selected ao botão clicado
         const selectedBtn = document.querySelector(`.radio-button.${value === 'yes' ? 'accept' : 'decline'}`);
         if (selectedBtn) {
             selectedBtn.classList.add('selected');
@@ -111,11 +80,12 @@ document.addEventListener('DOMContentLoaded', function() {
         UI.updateButtonState();
     };
 
-    // Event Listeners
+    // Submissão do formulário
     elements.form.addEventListener('submit', async (e) => {
         e.preventDefault();
+        
         if (!state.termsAccepted) {
-            UI.showError('Por favor, aceite os termos de uso para continuar.');
+            UI.showError('Você precisa aceitar os termos de uso para continuar.');
             return;
         }
         
@@ -127,7 +97,8 @@ document.addEventListener('DOMContentLoaded', function() {
         try {
             const response = await fetch(CONFIG.urls.login, {
                 method: 'POST',
-                body: new FormData(elements.form)
+                body: new FormData(elements.form),
+                credentials: 'include'
             });
 
             const data = await response.json();
@@ -137,10 +108,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
 
             if (data.success) {
-                UI.showPopup(elements.successPopup);
-                setTimeout(() => {
-                    window.location.href = data.redirect_url || CONFIG.urls.redirect;
-                }, CONFIG.timeouts.redirect);
+                window.location.href = data.redirect_url;
             } else {
                 throw new Error(data.message);
             }
@@ -160,49 +128,33 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // Modal handlers
+    // Gerenciamento do Modal
+    const Modal = {
+        show: () => {
+            elements.modal.style.display = 'flex';
+            setTimeout(() => elements.modal.classList.add('active'), 10);
+        },
+
+        hide: () => {
+            elements.modal.classList.remove('active');
+            setTimeout(() => elements.modal.style.display = 'none', CONFIG.timeouts.animation);
+        }
+    };
+
     elements.termsLink.addEventListener('click', Modal.show);
     elements.modalCloseBtn.addEventListener('click', Modal.hide);
     elements.modalCloseFooter.addEventListener('click', Modal.hide);
-    elements.modal.addEventListener('click', (e) => {
+    
+    window.addEventListener('click', (e) => {
         if (e.target === elements.modal) {
             Modal.hide();
         }
     });
 
-    // Popup handlers
-    elements.errorRetryBtn.addEventListener('click', () => {
-        UI.hidePopup(elements.errorPopup);
-    });
-
-    elements.continueBtn?.addEventListener('click', () => {
-        UI.hidePopup(elements.successPopup);
-    });
-
-    // Tecla ESC para fechar modais
+    // Tecla ESC para fechar modal
     document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape') {
             Modal.hide();
-            UI.hidePopup(elements.errorPopup);
-            UI.hidePopup(elements.successPopup);
         }
     });
-
-    // Verificação de conexão
-    window.addEventListener('online', () => {
-        if (state.isConnecting) {
-            location.reload();
-        }
-    });
-
-    window.addEventListener('offline', () => {
-        UI.showError('Conexão com a internet perdida. Verifique sua conexão WiFi.');
-    });
-
-    // Debug info no console (apenas em desenvolvimento)
-    if (window.location.hostname === 'localhost') {
-        console.info(`${CONFIG.app.name} v${CONFIG.app.version}`);
-        console.info(`Last Update: ${CONFIG.app.lastUpdate}`);
-        console.info(`Author: ${CONFIG.app.author}`);
-    }
 });
