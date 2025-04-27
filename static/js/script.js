@@ -3,19 +3,13 @@ document.addEventListener('DOMContentLoaded', function() {
         app: {
             name: 'Mamma Mia Eats',
             version: '2.0.0',
-            lastUpdate: '2025-04-27 23:08:53',
+            lastUpdate: '2025-04-27 23:21:21',
             author: 'MammaMiaEats'
         },
         urls: {
-            login: '/login',
+            connect: '/connect',
             redirect: 'https://instagram.com/MammaMiaEats'
-        },
-        timeouts: {
-            connection: 10000,
-            redirect: 2000,
-            animation: 300
-        },
-        maxRetries: 3
+        }
     };
 
     const elements = {
@@ -30,18 +24,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
     const state = {
         isConnecting: false,
-        retryCount: 0,
-        termsAccepted: false,
-        sessionValid: false
+        termsAccepted: false
     };
 
-    // Forçar desconexão inicial
-    fetch('/logout', {
-        method: 'POST',
-        credentials: 'include'
-    }).catch(console.error);
-
-    // Funções UI
+    // UI Controller
     const UI = {
         setLoading: (loading) => {
             const btn = elements.connectBtn;
@@ -80,7 +66,7 @@ document.addEventListener('DOMContentLoaded', function() {
         UI.updateButtonState();
     };
 
-    // Submissão do formulário
+    // Form submission
     elements.form.addEventListener('submit', async (e) => {
         e.preventDefault();
         
@@ -95,40 +81,30 @@ document.addEventListener('DOMContentLoaded', function() {
         UI.setLoading(true);
 
         try {
-            const response = await fetch(CONFIG.urls.login, {
+            const formData = new FormData(elements.form);
+            const response = await fetch(CONFIG.urls.connect, {
                 method: 'POST',
-                body: new FormData(elements.form),
-                credentials: 'include'
+                body: formData
             });
 
             const data = await response.json();
 
-            if (!response.ok) {
-                throw new Error(data.message || 'Erro de conexão');
-            }
-
             if (data.success) {
                 window.location.href = data.redirect_url;
             } else {
-                throw new Error(data.message);
+                throw new Error(data.message || 'Erro ao conectar');
             }
 
         } catch (error) {
-            console.error('Erro na conexão:', error);
-            
-            if (state.retryCount < CONFIG.maxRetries) {
-                state.retryCount++;
-                UI.showError(`${error.message}. Tentativa ${state.retryCount} de ${CONFIG.maxRetries}`);
-            } else {
-                UI.showError('Número máximo de tentativas excedido. Por favor, tente novamente mais tarde.');
-            }
+            console.error('Erro:', error);
+            UI.showError(error.message || 'Erro ao conectar. Tente novamente.');
         } finally {
             state.isConnecting = false;
             UI.setLoading(false);
         }
     });
 
-    // Gerenciamento do Modal
+    // Modal Controller
     const Modal = {
         show: () => {
             elements.modal.style.display = 'flex';
@@ -137,21 +113,23 @@ document.addEventListener('DOMContentLoaded', function() {
 
         hide: () => {
             elements.modal.classList.remove('active');
-            setTimeout(() => elements.modal.style.display = 'none', CONFIG.timeouts.animation);
+            setTimeout(() => elements.modal.style.display = 'none', 300);
         }
     };
 
+    // Modal event listeners
     elements.termsLink.addEventListener('click', Modal.show);
     elements.modalCloseBtn.addEventListener('click', Modal.hide);
     elements.modalCloseFooter.addEventListener('click', Modal.hide);
     
+    // Close modal on outside click
     window.addEventListener('click', (e) => {
         if (e.target === elements.modal) {
             Modal.hide();
         }
     });
 
-    // Tecla ESC para fechar modal
+    // Close modal on ESC key
     document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape') {
             Modal.hide();
