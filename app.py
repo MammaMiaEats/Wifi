@@ -6,11 +6,7 @@ import os
 app = Flask(__name__)
 app.secret_key = os.environ.get('SECRET_KEY', secrets.token_hex(16))
 
-@app.before_request
-def force_authentication():
-    if request.endpoint != 'login' and 'authenticated' not in session:
-        return redirect(url_for('login'))
-
+# Remova o force_authentication para permitir o acesso inicial à página
 @app.after_request
 def add_security_headers(response):
     response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
@@ -20,10 +16,7 @@ def add_security_headers(response):
 
 @app.route('/')
 def login():
-    if 'authenticated' in session:
-        return redirect('https://instagram.com/MammaMiaEats')
-    
-    current_time = datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')
+    current_time = "2025-04-27 23:21:21"  # Atualizado timestamp
     session_id = secrets.token_hex(16)
     
     return render_template('index.html',
@@ -33,29 +26,34 @@ def login():
                          current_time=current_time,
                          session_id=session_id)
 
-@app.route('/login', methods=['POST'])
-def authenticate():
-    if request.form.get('terms_accepted') != 'yes':
-        return jsonify({'success': False, 'message': 'Termos não aceitos'}), 400
+@app.route('/connect', methods=['POST'])
+def connect():
+    terms_accepted = request.form.get('terms_accepted')
+    client_mac = request.form.get('client_mac')
+    client_ip = request.form.get('client_ip')
+    ap_mac = request.form.get('ap_mac')
 
-    if not all([request.form.get('client_mac'),
-                request.form.get('client_ip'),
-                request.form.get('ap_mac')]):
-        return jsonify({'success': False, 'message': 'Parâmetros inválidos'}), 400
+    if terms_accepted != 'yes':
+        return jsonify({
+            'success': False,
+            'message': 'Você precisa aceitar os termos de uso.'
+        }), 400
 
-    session['authenticated'] = True
-    session['client_mac'] = request.form.get('client_mac')
-    session['timestamp'] = datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')
+    if not all([client_mac, client_ip, ap_mac]):
+        return jsonify({
+            'success': False,
+            'message': 'Parâmetros de conexão inválidos.'
+        }), 400
 
     return jsonify({
         'success': True,
+        'message': 'Conexão autorizada',
         'redirect_url': 'https://instagram.com/MammaMiaEats'
     })
 
-@app.route('/logout', methods=['POST'])
-def logout():
-    session.clear()
-    return jsonify({'success': True})
+@app.route('/status')
+def status():
+    return jsonify({'status': 'online'})
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 5000)), debug=False)
