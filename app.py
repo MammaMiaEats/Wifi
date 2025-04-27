@@ -1,97 +1,61 @@
-from flask import Flask, request, render_template, jsonify, redirect
+from flask import Flask, render_template, request, redirect, url_for, session, jsonify
 from datetime import datetime
-import logging
+import secrets
 import os
-import sys
-from dotenv import load_dotenv
-
-# Carrega variáveis de ambiente
-load_dotenv()
 
 app = Flask(__name__)
-app.secret_key = os.getenv('SECRET_KEY', 'mammamia_wifi_portal_key_2025')
+app.secret_key = os.environ.get('SECRET_KEY', secrets.token_hex(16))
 
-# Configuração de logging para stdout em vez de arquivo
-logging.basicConfig(
-    stream=sys.stdout,  # Alterado para stdout
-    level=logging.INFO,
-    format='%(asctime)s [%(levelname)s] %(message)s',
-    datefmt='%Y-%m-%d %H:%M:%S'
-)
+@app.before_request
+def force_authentication():
+    if request.endpoint != 'login' and 'authenticated' not in session:
+        return redirect(url_for('login'))
+
+@app.after_request
+def add_security_headers(response):
+    response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
+    response.headers['Pragma'] = 'no-cache'
+    response.headers['Expires'] = '0'
+    return response
 
 @app.route('/')
-@app.route('/login')
-def index():
-    """Rota principal que serve tanto '/' quanto '/login'"""
-    client_mac = request.args.get('client_mac', '')
-    client_ip = request.args.get('client_ip', '')
-    ap_mac = request.args.get('ap_mac', '')
-    
-    logging.info(f"Novo acesso - MAC: {client_mac}, IP: {client_ip}, AP: {ap_mac}")
+def login():
+    if 'authenticated' in session:
+        return redirect('https://instagram.com/MammaMiaEats')
     
     current_time = datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')
+    session_id = secrets.token_hex(16)
     
     return render_template('index.html',
+                         client_mac=request.args.get('client_mac', ''),
+                         client_ip=request.args.get('client_ip', ''),
+                         ap_mac=request.args.get('ap_mac', ''),
                          current_time=current_time,
-                         client_mac=client_mac,
-                         client_ip=client_ip,
-                         ap_mac=ap_mac,
-                         year=datetime.utcnow().year,
-                         company_name="Mamma Mia Eats",
-                         last_update="2025-04-27 01:02:49",
-                         user="MammaMiaEats")
+                         session_id=session_id)
 
 @app.route('/login', methods=['POST'])
-def login_post():
-    """Processa o POST do formulário de login"""
-    try:
-        client_mac = request.form.get('client_mac', '')
-        client_ip = request.form.get('client_ip', '')
-        terms_accepted = request.form.get('terms_accepted') == 'yes'
-        
-        if not terms_accepted:
-            return jsonify({
-                'success': False,
-                'message': 'É necessário aceitar os termos de uso'
-            }), 400
+def authenticate():
+    if request.form.get('terms_accepted') != 'yes':
+        return jsonify({'success': False, 'message': 'Termos não aceitos'}), 400
 
-        logging.info(f"Login bem-sucedido - MAC: {client_mac}, IP: {client_ip}")
-        
-        return jsonify({
-            'success': True,
-            'message': 'Autenticação realizada com sucesso',
-            'redirect_url': os.getenv('REDIRECT_URL', 'https://instagram.com/MammaMiaEats')
-        })
+    if not all([request.form.get('client_mac'),
+                request.form.get('client_ip'),
+                request.form.get('ap_mac')]):
+        return jsonify({'success': False, 'message': 'Parâmetros inválidos'}), 400
 
-    except Exception as e:
-        logging.error(f"Erro no login: {str(e)}")
-        return jsonify({
-            'success': False,
-            'message': 'Erro durante a autenticação'
-        }), 500
+    session['authenticated'] = True
+    session['client_mac'] = request.form.get('client_mac')
+    session['timestamp'] = datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')
 
-@app.route('/health')
-def health_check():
-    """Rota para verificação de saúde da aplicação"""
     return jsonify({
-        'status': 'healthy',
-        'timestamp': datetime.utcnow().isoformat()
+        'success': True,
+        'redirect_url': 'https://instagram.com/MammaMiaEats'
     })
 
-@app.errorhandler(404)
-def page_not_found(e):
-    """Handler para página não encontrada"""
-    return redirect('/')
-
-@app.errorhandler(500)
-def internal_error(e):
-    """Handler para erro interno do servidor"""
-    logging.error(f"Erro interno do servidor: {str(e)}")
-    return jsonify({
-        'success': False,
-        'message': 'Erro interno do servidor'
-    }), 500
+@app.route('/logout', methods=['POST'])
+def logout():
+    session.clear()
+    return jsonify({'success': True})
 
 if __name__ == '__main__':
-    port = int(os.getenv('PORT', 10000))
-    app.run(host='0.0.0.0', port=port, debug=os.getenv('FLASK_ENV') == 'development')
+    app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 5000)), debug=False)
