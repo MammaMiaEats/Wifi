@@ -1,0 +1,15 @@
+mammamia-wifi-portal/
+├── app.py
+├── requirements.txt
+├── gunicorn.conf.py
+├── render.yaml
+├── .env
+├── static/
+│   ├── css/
+│   │   └── style.css
+│   └── js/
+│       └── script.js
+├── templates/
+│   └── index.html
+└── logs/
+    └── .gitkeep
