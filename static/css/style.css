@@ -2,8 +2,8 @@
     /* Cores principais */
     --primary-color: #ff6b00;
     --secondary-color: #60b70a;
-    --background-color: #1a1a1a;
-    --surface-color: #2a2a2a;
+    --background-color: #000000;
+    --surface-color: #1d1d1d;
     --text-color: #ffffff;
     --text-secondary: rgba(255, 255, 255, 0.7);
     --error-color: #ff4444;
@@ -15,14 +15,7 @@
     --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
     
     /* Transições */
-    --transition-fast: 0.2s ease;
     --transition-normal: 0.3s ease;
-    --transition-slow: 0.5s ease;
-    
-    /* Border Radius */
-    --radius-sm: 8px;
-    --radius-md: 12px;
-    --radius-lg: 20px;
 }
 
 /* Reset e Base */
@@ -61,86 +54,60 @@ body {
 .form-container {
     background: var(--surface-color);
     padding: 40px;
-    border-radius: var(--radius-lg);
+    border-radius: 20px;
     width: 100%;
     max-width: 480px;
     box-shadow: var(--shadow-lg);
-    position: relative;
-    overflow: hidden;
+    text-align: center;
+}
+
+/* WiFi Icon */
+.wifi-icon {
+    font-size: 32px;
+    color: var(--primary-color);
+    margin-bottom: 10px;
 }
 
 /* Logo */
 .logo-container {
-    text-align: center;
     margin-bottom: 40px;
 }
 
 .logo-text {
-    font-size: 42px;
-    font-weight: 800;
+    font-family: 'Tropical Vibes', cursive;
+    font-size: 36px;
     line-height: 1.2;
 }
 
 .logo-primary {
     color: var(--primary-color);
-    text-shadow: 0 2px 4px rgba(255, 107, 0, 0.3);
 }
 
 .logo-secondary {
     color: var(--secondary-color);
-    text-shadow: 0 2px 4px rgba(96, 183, 10, 0.3);
-}
-
-/* WiFi Info */
-.wifi-info {
-    text-align: center;
-    margin-bottom: 30px;
-}
-
-.wifi-icon {
-    font-size: 48px;
-    color: var(--primary-color);
-    margin-bottom: 15px;
-}
-
-.wifi-info h2 {
-    font-size: 24px;
-    margin-bottom: 10px;
-    color: var(--text-color);
-}
-
-.wifi-info p {
-    color: var(--text-secondary);
-}
-
-.wifi-info strong {
-    color: var(--primary-color);
 }
 
 /* Termos */
 .terms-section {
     margin-bottom: 30px;
-    text-align: center;
-}
-
-.terms-section h3 {
-    font-size: 20px;
-    margin-bottom: 15px;
 }
 
 .terms-options {
     display: flex;
     justify-content: center;
     gap: 20px;
-    margin: 20px 0;
+    margin-bottom: 20px;
 }
 
 .radio-button {
+    flex: 1;
+    max-width: 160px;
     display: flex;
     align-items: center;
+    justify-content: center;
     cursor: pointer;
-    padding: 10px 20px;
-    border-radius: var(--radius-md);
+    padding: 12px 24px;
+    border-radius: 10px;
     background: rgba(255, 255, 255, 0.05);
     transition: var(--transition-normal);
 }
@@ -149,56 +116,20 @@ body {
     background: rgba(255, 255, 255, 0.1);
 }
 
-.radio-custom {
-    width: 22px;
-    height: 22px;
-    border: 2px solid var(--primary-color);
-    border-radius: 50%;
-    margin-right: 10px;
-    position: relative;
-    transition: var(--transition-normal);
-}
-
-.radio-button input[type="radio"] {
-    display: none;
-}
-
-.radio-button input[type="radio"]:checked + .radio-custom::after {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 12px;
-    height: 12px;
-    background: var(--primary-color);
-    border-radius: 50%;
-    animation: radioCheck 0.2s ease;
-}
-
-.terms-link {
-    color: var(--primary-color);
-    text-decoration: none;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
+.terms-text {
     font-size: 14px;
-    transition: var(--transition-normal);
+    color: var(--text-secondary);
+    margin: 20px 0;
 }
 
-.terms-link:hover {
-    color: var(--secondary-color);
-}
-
-/* Botão de Conexão */
-.connect-button {
+/* Botões */
+.connect-button,
+.terms-button {
     width: 100%;
-    padding: 16px;
-    background: var(--primary-color);
-    color: white;
+    padding: 14px;
     border: none;
-    border-radius: var(--radius-md);
-    font-size: 18px;
+    border-radius: 10px;
+    font-size: 16px;
     font-weight: 600;
     cursor: pointer;
     display: flex;
@@ -208,182 +139,25 @@ body {
     transition: var(--transition-normal);
 }
 
-.connect-button:not(:disabled):hover {
-    background: #ff7b1a;
+.connect-button {
+    background: var(--primary-color);
+    color: white;
+}
+
+.terms-button {
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--primary-color);
+    margin-bottom: 20px;
+}
+
+.connect-button:not(:disabled):hover,
+.terms-button:hover {
     transform: translateY(-2px);
 }
 
 .connect-button:disabled {
     background: #666;
     cursor: not-allowed;
-}
-
-/* Modal */
-.modal {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.8);
-    z-index: 1000;
-    opacity: 0;
-    transition: opacity var(--transition-normal);
-}
-
-.modal.active {
-    opacity: 1;
-}
-
-.modal-content {
-    background: var(--surface-color);
-    width: 90%;
-    max-width: 600px;
-    margin: 50px auto;
-    border-radius: var(--radius-lg);
-    position: relative;
-    transform: translateY(-20px);
-    transition: transform var(--transition-normal);
-}
-
-.modal.active .modal-content {
-    transform: translateY(0);
-}
-
-.modal-header {
-    padding: 20px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.close-button {
-    background: none;
-    border: none;
-    color: var(--text-secondary);
-    font-size: 24px;
-    cursor: pointer;
-    transition: var(--transition-normal);
-}
-
-.close-button:hover {
-    color: var(--primary-color);
-}
-
-.modal-body {
-    padding: 30px;
-    max-height: 60vh;
-    overflow-y: auto;
-}
-
-.modal-body .terms-section {
-    text-align: left;
-    margin-bottom: 25px;
-}
-
-.modal-body .terms-section h3 {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    color: var(--primary-color);
-    margin-bottom: 15px;
-}
-
-.modal-body .terms-section ul {
-    list-style: none;
-}
-
-.modal-body .terms-section ul li {
-    margin-bottom: 10px;
-    color: var(--text-secondary);
-    position: relative;
-    padding-left: 20px;
-}
-
-.modal-body .terms-section ul li::before {
-    content: '•';
-    color: var(--primary-color);
-    position: absolute;
-    left: 0;
-}
-
-.modal-footer {
-    padding: 20px;
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
-    text-align: right;
-}
-
-.modal-button {
-    background: var(--primary-color);
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: var(--radius-md);
-    cursor: pointer;
-    font-weight: 600;
-    transition: var(--transition-normal);
-}
-
-.modal-button:hover {
-    background: #ff7b1a;
-}
-
-/* Popups */
-.popup {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.8);
-    z-index: 1000;
-    align-items: center;
-    justify-content: center;
-}
-
-.popup-content {
-    background: var(--surface-color);
-    padding: 30px;
-    border-radius: var(--radius-lg);
-    text-align: center;
-    width: 90%;
-    max-width: 400px;
-}
-
-.popup-icon {
-    font-size: 48px;
-    margin-bottom: 20px;
-}
-
-.success .popup-icon {
-    color: var(--success-color);
-}
-
-.error .popup-icon {
-    color: var(--error-color);
-}
-
-.popup-button {
-    background: var(--primary-color);
-    color: white;
-    border: none;
-    padding: 12px 24px;
-    border-radius: var(--radius-md);
-    font-weight: 600;
-    cursor: pointer;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    margin-top: 20px;
-    transition: var(--transition-normal);
-}
-
-.popup-button:hover {
-    background: #ff7b1a;
-    transform: translateY(-2px);
 }
 
 /* Footer */
@@ -398,42 +172,23 @@ body {
     font-size: 14px;
 }
 
-.update-info {
-    font-size: 12px;
-    margin-top: 5px;
-}
-
-/* Animações */
-@keyframes radioCheck {
-    0% {
-        transform: translate(-50%, -50%) scale(0);
-    }
-    100% {
-        transform: translate(-50%, -50%) scale(1);
-    }
-}
-
 /* Media Queries */
 @media (max-width: 480px) {
     .form-container {
-        padding: 20px;
+        padding: 30px 20px;
     }
 
     .logo-text {
         font-size: 32px;
     }
 
-    .wifi-icon {
-        font-size: 36px;
-    }
-
     .terms-options {
         flex-direction: column;
-        gap: 10px;
+        align-items: center;
     }
 
-    .modal-content {
-        width: 95%;
-        margin: 20px auto;
+    .radio-button {
+        width: 100%;
+        max-width: 200px;
     }
 }
