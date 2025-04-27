@@ -8,16 +8,6 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <!-- Adiciona a fonte Tropical Vibes -->
-    <style>
-        @font-face {
-            font-family: 'Tropical Vibes';
-            src: url('{{ url_for('static', filename='fonts/TropicalVibes-Regular.woff2') }}') format('woff2'),
-                 url('{{ url_for('static', filename='fonts/TropicalVibes-Regular.woff') }}') format('woff');
-            font-weight: normal;
-            font-style: normal;
-        }
-    </style>
 </head>
 <body>
     <div class="page-container">
@@ -28,37 +18,34 @@
                 </div>
                 
                 <div class="logo-container">
-                    <h1 class="logo-text">
-                        <span class="logo-primary">Mamma Mia</span>
-                        <span class="logo-secondary">Eats</span>
-                    </h1>
+                    <img src="https://raw.githubusercontent.com/MammaMiaEats/Wifi/main/logo.png.png" alt="Mamma Mia Eats" class="logo-image">
                 </div>
 
                 <form id="access-form">
-                    <!-- Campos ocultos -->
                     <input type="hidden" name="client_mac" value="{{ client_mac }}">
                     <input type="hidden" name="client_ip" value="{{ client_ip }}">
                     <input type="hidden" name="ap_mac" value="{{ ap_mac }}">
                     <input type="hidden" name="timestamp" value="{{ current_time }}">
 
                     <div class="terms-section">
+                        <p class="terms-text">Para utilizar nossa rede, você precisa aceitar os termos de uso.</p>
+                        
                         <div class="terms-options">
-                            <label class="radio-button">
-                                <input type="radio" name="terms_accepted" value="yes">
-                                <span class="radio-custom"></span>
-                                <span class="label-text">Aceitar</span>
-                            </label>
-                            <label class="radio-button">
-                                <input type="radio" name="terms_accepted" value="no">
-                                <span class="radio-custom"></span>
-                                <span class="label-text">Recusar</span>
-                            </label>
+                            <button type="button" class="radio-button accept" onclick="selectOption('yes')">
+                                <i class="fas fa-check"></i>
+                                Aceitar
+                            </button>
+                            <button type="button" class="radio-button decline" onclick="selectOption('no')">
+                                <i class="fas fa-times"></i>
+                                Recusar
+                            </button>
                         </div>
 
-                        <p class="terms-text">Para utilizar nossa rede, você precisa aceitar os termos de uso.</p>
+                        <input type="hidden" name="terms_accepted" id="terms_accepted" value="">
 
                         <button type="button" id="terms-link" class="terms-button">
-                            <span class="button-text">Ler Termos de Uso</span>
+                            <i class="fas fa-file-contract"></i>
+                            Ler Termos de Uso
                         </button>
                     </div>
 
@@ -77,8 +64,25 @@
         </footer>
     </div>
 
-    <!-- Modal dos Termos (mantido igual) -->
-    <!-- ... -->
+    <!-- Modal dos Termos -->
+    <div id="terms-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Termos de Uso</h2>
+                <button class="close-button">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div class="modal-body">
+                <!-- ... (conteúdo do modal) ... -->
+            </div>
+
+            <div class="modal-footer">
+                <button class="modal-button" id="close-terms">Entendi</button>
+            </div>
+        </div>
+    </div>
 
     <script src="{{ url_for('static', filename='js/script.js') }}"></script>
 </body>
