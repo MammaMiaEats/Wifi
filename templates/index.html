@@ -76,35 +76,31 @@
             background: #111;
             border-radius: 5px;
         }
+        #loading {
+            display: none;
+            margin: 10px 0;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <h1 class="title">Mamma Mia Eats</h1>
         
-        <form id="wifi-form" method="post">
-            <input type="hidden" name="mac" id="client_mac" value="">
-            <input type="hidden" name="ip" id="client_ip" value="">
-            <input type="hidden" name="username" value="MammaMiaEats">
-            <input type="hidden" name="password" value="MammaMiaEats">
-            <input type="hidden" id="terms" name="terms" value="no">
-            <input type="hidden" name="dst" id="dst" value="">
-            <input type="hidden" name="popup" id="popup" value="">
-            
-            <div class="terms-text">
-                Ao utilizar nossa rede WiFi, você concorda em respeitar nossas políticas de uso. 
-                O uso é limitado a 2 horas por sessão. Não é permitido o download de conteúdo 
-                ilegal ou uso de programas de compartilhamento de arquivos P2P. Seu endereço MAC 
-                será registrado para fins de segurança.
-            </div>
-            
-            <p>Para usar nossa rede WiFi, aceite os termos:</p>
-            
-            <button type="button" class="btn accept" onclick="accept()">Aceitar</button>
-            <button type="button" class="btn decline" onclick="decline()">Recusar</button>
-            <br>
-            <button type="button" id="connect" class="btn connect" disabled onclick="connectWifi()">Conectar</button>
-        </form>
+        <div class="terms-text">
+            Ao utilizar nossa rede WiFi, você concorda em respeitar nossas políticas de uso. 
+            O uso é limitado a 2 horas por sessão. Não é permitido o download de conteúdo 
+            ilegal ou uso de programas de compartilhamento de arquivos P2P. Seu endereço MAC 
+            será registrado para fins de segurança.
+        </div>
+        
+        <p>Para usar nossa rede WiFi, aceite os termos:</p>
+        
+        <button type="button" class="btn accept" onclick="accept()">Aceitar</button>
+        <button type="button" class="btn decline" onclick="decline()">Recusar</button>
+        <br>
+        <button type="button" id="connect" class="btn connect" disabled onclick="connectWifi()">Conectar</button>
+        
+        <div id="loading">Conectando...</div>
 
         <div class="footer">
             &copy; 2025 Mamma Mia Eats
@@ -112,58 +108,81 @@
     </div>
 
     <script>
-        // Função para obter parâmetros da URL
-        function getUrlParams() {
-            var vars = {};
-            var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m,key,value) {
-                vars[key] = decodeURIComponent(value);
-            });
-            return vars;
-        }
-        
-        // Carrega os parâmetros quando a página carregar
-        window.onload = function() {
-            var params = getUrlParams();
-            
-            // Preenche os campos com os valores da URL
-            document.getElementById('client_mac').value = params['mac'] || '';
-            document.getElementById('client_ip').value = params['ip'] || '';
-            document.getElementById('dst').value = params['dst'] || 'https://instagram.com/MammaMiaEats';
-            document.getElementById('popup').value = params['popup'] || 'true';
-            
-            // Verifica se há um link para login
-            window.loginUrl = params['link-login'] || '';
+        // Armazena os parâmetros da URL
+        const urlParams = {
+            mac: "{{ mac }}",
+            ip: "{{ ip }}",
+            link_login: "{{ link_login }}",
+            link_login_only: "{{ link_login_only }}",
+            link_logout: "{{ link_logout }}",
+            dst: "{{ dst }}"
         };
         
+        let termsAccepted = false;
+        
         function accept() {
-            document.getElementById('terms').value = 'yes';
+            termsAccepted = true;
             document.getElementById('connect').disabled = false;
         }
         
         function decline() {
-            document.getElementById('terms').value = 'no';
+            termsAccepted = false;
             document.getElementById('connect').disabled = true;
         }
         
         function connectWifi() {
-            if(document.getElementById('terms').value !== 'yes') {
+            if (!termsAccepted) {
                 alert('Você precisa aceitar os termos para conectar.');
                 return;
             }
             
-            var params = getUrlParams();
-            var form = document.getElementById('wifi-form');
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('connect').disabled = true;
             
-            // Se tiver link-login na URL, usa ele, senão usa o caminho padrão
-            if (window.loginUrl) {
-                form.action = window.loginUrl;
-            } else {
-                // Caminho padrão para MikroTik
-                form.action = '/login';
-            }
-            
-            // Envia o formulário
-            form.submit();
+            // Primeira opção: usar a API Flask para processar
+            fetch('/connect', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: new URLSearchParams({
+                    'terms': 'yes',
+                    'mac': urlParams.mac,
+                    'ip': urlParams.ip,
+                    'login_url': urlParams.link_login_only || urlParams.link_login,
+                    'username': 'MammaMiaEats',
+                    'password': 'MammaMiaEats',
+                    'dst': urlParams.dst
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Redireciona para a URL fornecida pelo backend
+                    window.location.href = data.redirect_url;
+                } else {
+                    alert(data.message || 'Erro ao conectar');
+                    document.getElementById('connect').disabled = false;
+                }
+            })
+            .catch(error => {
+                console.error('Erro:', error);
+                
+                // Plano B: tentar autenticação direta com MikroTik se a API falhar
+                if (urlParams.link_login) {
+                    const mikrotikUrl = new URL(urlParams.link_login);
+                    mikrotikUrl.searchParams.append('username', 'MammaMiaEats');
+                    mikrotikUrl.searchParams.append('password', 'MammaMiaEats');
+                    mikrotikUrl.searchParams.append('dst', urlParams.dst);
+                    window.location.href = mikrotikUrl.toString();
+                } else {
+                    alert('Falha na conexão. Por favor, tente novamente.');
+                    document.getElementById('connect').disabled = false;
+                }
+            })
+            .finally(() => {
+                document.getElementById('loading').style.display = 'none';
+            });
         }
     </script>
 </body>
