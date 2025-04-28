@@ -72,21 +72,20 @@
     <div class="container">
         <h1 class="title">Mamma Mia Eats</h1>
         
-        <form id="wifi-form" method="get" action="{{ auth_url }}">
+        <form id="wifi-form">
             <input type="hidden" name="client_mac" value="{{ client_mac }}">
             <input type="hidden" name="client_ip" value="{{ client_ip }}">
             <input type="hidden" name="ap_mac" value="{{ ap_mac }}">
-            <input type="hidden" name="timestamp" value="2025-04-28 01:40:19">
+            <input type="hidden" name="timestamp" value="2025-04-28 01:42:15">
             <input type="hidden" name="username" value="MammaMiaEats">
             <input type="hidden" id="terms" name="terms" value="no">
-            <input type="hidden" name="url" value="https://instagram.com/MammaMiaEats">
             
             <p>Para usar nossa rede WiFi, aceite os termos:</p>
             
             <button type="button" class="btn accept" onclick="accept()">Aceitar</button>
             <button type="button" class="btn decline" onclick="decline()">Recusar</button>
             <br>
-            <button type="submit" id="connect" class="btn connect" disabled>Conectar</button>
+            <button type="button" id="connect" class="btn connect" disabled onclick="connectWifi()">Conectar</button>
         </form>
 
         <div class="footer">
@@ -105,14 +104,30 @@
             document.getElementById('connect').disabled = true;
         }
         
-        document.getElementById('wifi-form').onsubmit = function(e) {
+        function connectWifi() {
             if(document.getElementById('terms').value !== 'yes') {
-                e.preventDefault();
                 alert('Você precisa aceitar os termos para conectar.');
-                return false;
+                return;
             }
-            return true;
-        };
+
+            // Construir a URL de autenticação
+            var baseUrl = window.location.href;
+            var clientMac = document.querySelector('input[name="client_mac"]').value;
+            var clientIp = document.querySelector('input[name="client_ip"]').value;
+            var apMac = document.querySelector('input[name="ap_mac"]').value;
+
+            // Parâmetros da URL
+            var params = new URLSearchParams({
+                cmd: 'login',
+                mac: clientMac,
+                ip: clientIp,
+                ap_mac: apMac,
+                url: 'https://instagram.com/MammaMiaEats'
+            });
+
+            // Redirecionar para a URL de autenticação
+            window.location.href = baseUrl + '?' + params.toString();
+        }
     </script>
 </body>
 </html>
