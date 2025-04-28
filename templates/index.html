@@ -66,19 +66,37 @@
             font-size: 12px;
             color: #666;
         }
+        .terms-text {
+            font-size: 14px;
+            text-align: left;
+            margin: 15px 0;
+            padding: 10px;
+            height: 100px;
+            overflow-y: auto;
+            background: #111;
+            border-radius: 5px;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <h1 class="title">Mamma Mia Eats</h1>
         
-        <form id="wifi-form">
-            <input type="hidden" name="client_mac" value="{{ client_mac }}">
-            <input type="hidden" name="client_ip" value="{{ client_ip }}">
-            <input type="hidden" name="ap_mac" value="{{ ap_mac }}">
-            <input type="hidden" name="timestamp" value="2025-04-28 02:00:09">
+        <form id="wifi-form" method="post">
+            <input type="hidden" name="mac" id="client_mac" value="">
+            <input type="hidden" name="ip" id="client_ip" value="">
             <input type="hidden" name="username" value="MammaMiaEats">
+            <input type="hidden" name="password" value="MammaMiaEats">
             <input type="hidden" id="terms" name="terms" value="no">
+            <input type="hidden" name="dst" id="dst" value="">
+            <input type="hidden" name="popup" id="popup" value="">
+            
+            <div class="terms-text">
+                Ao utilizar nossa rede WiFi, você concorda em respeitar nossas políticas de uso. 
+                O uso é limitado a 2 horas por sessão. Não é permitido o download de conteúdo 
+                ilegal ou uso de programas de compartilhamento de arquivos P2P. Seu endereço MAC 
+                será registrado para fins de segurança.
+            </div>
             
             <p>Para usar nossa rede WiFi, aceite os termos:</p>
             
@@ -94,6 +112,29 @@
     </div>
 
     <script>
+        // Função para obter parâmetros da URL
+        function getUrlParams() {
+            var vars = {};
+            var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m,key,value) {
+                vars[key] = decodeURIComponent(value);
+            });
+            return vars;
+        }
+        
+        // Carrega os parâmetros quando a página carregar
+        window.onload = function() {
+            var params = getUrlParams();
+            
+            // Preenche os campos com os valores da URL
+            document.getElementById('client_mac').value = params['mac'] || '';
+            document.getElementById('client_ip').value = params['ip'] || '';
+            document.getElementById('dst').value = params['dst'] || 'https://instagram.com/MammaMiaEats';
+            document.getElementById('popup').value = params['popup'] || 'true';
+            
+            // Verifica se há um link para login
+            window.loginUrl = params['link-login'] || '';
+        };
+        
         function accept() {
             document.getElementById('terms').value = 'yes';
             document.getElementById('connect').disabled = false;
@@ -110,26 +151,19 @@
                 return;
             }
             
-            // Pega os parâmetros da URL atual
-            var urlParams = new URLSearchParams(window.location.search);
+            var params = getUrlParams();
+            var form = document.getElementById('wifi-form');
             
-            // Construir os parâmetros para autenticação
-            var authParams = new URLSearchParams();
+            // Se tiver link-login na URL, usa ele, senão usa o caminho padrão
+            if (window.loginUrl) {
+                form.action = window.loginUrl;
+            } else {
+                // Caminho padrão para MikroTik
+                form.action = '/login';
+            }
             
-            // Adiciona os parâmetros necessários
-            authParams.append('mac', urlParams.get('mac') || '');
-            authParams.append('ip', urlParams.get('ip') || '');
-            authParams.append('username', 'MammaMiaEats');
-            authParams.append('dst', 'https://instagram.com/MammaMiaEats');
-            
-            // Pega o link-login-only da URL se disponível
-            var loginUrl = urlParams.get('link-login-only') || '';
-            
-            // Se tiver link-login-only, usa ele, senão usa o caminho padrão
-            var finalUrl = loginUrl || window.location.pathname;
-            
-            // Redireciona para a autenticação
-            window.location.href = finalUrl + '?' + authParams.toString();
+            // Envia o formulário
+            form.submit();
         }
     </script>
 </body>
