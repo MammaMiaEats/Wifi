@@ -8,11 +8,12 @@ from dotenv import load_dotenv
 # Carrega variáveis do arquivo .env
 load_dotenv()
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder='static')
 app.secret_key = os.environ.get('SECRET_KEY', secrets.token_hex(16))
 app.config['SESSION_COOKIE_SECURE'] = True
 app.config['SESSION_COOKIE_HTTPONLY'] = True
 app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(seconds=int(os.environ.get('SESSION_TIMEOUT', 7200)))
+
 
 # Configuração CORS para permitir solicitações de domínios específicos
 allowed_domains = os.environ.get('ALLOWED_DOMAINS', '*').split(',')
