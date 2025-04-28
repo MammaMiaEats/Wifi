@@ -1,18 +1,24 @@
 :root {
     /* Cores principais */
     --primary-color: #ff6b00;
+    --primary-color-hover: #ff7b1a;
+    --primary-color-active: #e66000;
     --secondary-color: #60b70a;
     --background-color: #000000;
     --surface-color: #1d1d1d;
+    --surface-color-hover: #2a2a2a;
     --text-color: #ffffff;
     --text-secondary: rgba(255, 255, 255, 0.7);
     --error-color: #ff4444;
+    --error-color-hover: #ff5252;
     --success-color: #00c853;
+    --success-color-hover: #00e676;
 
     /* Efeitos */
     --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.1);
     --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
     --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+    --shadow-hover: 0 6px 12px rgba(0, 0, 0, 0.2);
     
     /* Transições */
     --transition-fast: 0.2s ease;
@@ -61,11 +67,17 @@ body {
 .form-container {
     background: var(--surface-color);
     padding: 40px;
-    border-radius: 20px;
+    border-radius: var(--radius-lg);
     width: 100%;
     max-width: 480px;
     box-shadow: var(--shadow-lg);
     position: relative;
+    transition: transform var(--transition-normal), box-shadow var(--transition-normal);
+}
+
+.form-container:hover {
+    box-shadow: var(--shadow-hover);
+    transform: translateY(-3px);
 }
 
 /* WiFi Icon */
@@ -75,6 +87,12 @@ body {
     right: 20px;
     font-size: 24px;
     color: var(--primary-color);
+    transition: color var(--transition-fast);
+}
+
+.wifi-icon:hover {
+    color: var(--primary-color-hover);
+    transform: scale(1.1);
 }
 
 /* Logo */
@@ -86,6 +104,11 @@ body {
 .logo-image {
     max-width: 200px;
     height: auto;
+    transition: filter var(--transition-normal);
+}
+
+.logo-image:hover {
+    filter: brightness(1.1);
 }
 
 /* Termos */
@@ -94,10 +117,11 @@ body {
 }
 
 .terms-text {
-    font-size: 12px;
+    font-size: 14px;
     color: var(--text-secondary);
     margin-bottom: 20px;
     text-align: center;
+    line-height: 1.5;
 }
 
 .terms-options {
@@ -107,20 +131,30 @@ body {
     margin-bottom: 20px;
 }
 
-.radio-button {
-    flex: 1;
-    max-width: 160px;
+/* Estilização comum para botões */
+.radio-button,
+.connect-button,
+.terms-button,
+.modal-button {
+    border: none;
+    border-radius: var(--radius-md);
+    font-weight: 600;
+    cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
+    transition: transform var(--transition-normal), 
+                background-color var(--transition-normal),
+                box-shadow var(--transition-normal);
+}
+
+/* Botões de opção */
+.radio-button {
+    flex: 1;
+    max-width: 160px;
     gap: 8px;
-    cursor: pointer;
     padding: 12px 24px;
-    border-radius: 10px;
-    border: none;
     font-size: 16px;
-    font-weight: 600;
-    transition: var(--transition-normal);
 }
 
 .radio-button.accept {
@@ -133,49 +167,70 @@ body {
     color: white;
 }
 
-.radio-button.accept:hover {
-    background: #00e676;
+.radio-button:hover {
     transform: translateY(-2px);
+}
+
+.radio-button.accept:hover {
+    background: var(--success-color-hover);
     box-shadow: 0 4px 8px rgba(0, 200, 83, 0.3);
 }
 
 .radio-button.decline:hover {
-    background: #ff5252;
-    transform: translateY(-2px);
+    background: var(--error-color-hover);
     box-shadow: 0 4px 8px rgba(255, 68, 68, 0.3);
 }
 
 .radio-button.selected {
     transform: scale(0.98);
-    box-shadow: none;
+    box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.2);
 }
 
-/* Botões */
+.radio-button:focus,
+.connect-button:focus,
+.terms-button:focus,
+.modal-button:focus {
+    outline: 2px solid var(--primary-color);
+    outline-offset: 2px;
+}
+
+/* Botões de ação */
 .connect-button,
 .terms-button {
     width: 100%;
     padding: 14px;
-    border: none;
-    border-radius: 10px;
     font-size: 16px;
-    font-weight: 600;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
     gap: 10px;
-    transition: var(--transition-normal);
+    border-radius: var(--radius-md);
 }
 
 .connect-button {
     background: var(--primary-color);
     color: white;
+    position: relative;
+    overflow: hidden;
+}
+
+.connect-button::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s ease;
+}
+
+.connect-button:not(:disabled):hover::after {
+    left: 100%;
 }
 
 .terms-button {
     background: rgba(255, 255, 255, 0.1);
     color: var(--primary-color);
     margin: 20px 0;
+    border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .connect-button:not(:disabled):hover,
@@ -183,9 +238,25 @@ body {
     transform: translateY(-2px);
 }
 
+.connect-button:not(:disabled):hover {
+    background: var(--primary-color-hover);
+    box-shadow: 0 4px 12px rgba(255, 107, 0, 0.4);
+}
+
+.terms-button:hover {
+    background: var(--surface-color-hover);
+    color: var(--primary-color-hover);
+}
+
+.connect-button:active:not(:disabled) {
+    transform: translateY(0);
+    background: var(--primary-color-active);
+}
+
 .connect-button:disabled {
-    background: #666;
+    background: #555;
     cursor: not-allowed;
+    opacity: 0.7;
 }
 
 /* Modal */
@@ -196,10 +267,11 @@ body {
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.8);
+    background: rgba(0, 0, 0, 0.85);
     z-index: 1000;
     opacity: 0;
     transition: opacity var(--transition-normal);
+    backdrop-filter: blur(3px);
 }
 
 .modal.active {
@@ -215,6 +287,8 @@ body {
     position: relative;
     transform: translateY(-20px);
     transition: transform var(--transition-normal);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .modal.active .modal-content {
@@ -243,11 +317,19 @@ body {
     color: var(--text-secondary);
     font-size: 24px;
     cursor: pointer;
-    transition: var(--transition-normal);
+    transition: color var(--transition-normal), transform var(--transition-fast);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
 }
 
 .close-button:hover {
     color: var(--primary-color);
+    background: rgba(255, 255, 255, 0.05);
+    transform: rotate(90deg);
 }
 
 .modal-body {
@@ -272,6 +354,18 @@ body {
     display: flex;
     align-items: center;
     gap: 10px;
+    position: relative;
+    padding-bottom: 8px;
+}
+
+.modal-body .terms-section h3::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 40px;
+    height: 2px;
+    background: var(--primary-color);
 }
 
 .modal-body .terms-section ul {
@@ -281,10 +375,10 @@ body {
 
 .modal-body .terms-section ul li {
     color: var(--text-secondary);
-    margin-bottom: 10px;
+    margin-bottom: 14px;
     position: relative;
     font-size: 14px;
-    line-height: 1.5;
+    line-height: 1.6;
 }
 
 .modal-body .terms-section ul li::before {
@@ -292,6 +386,7 @@ body {
     color: var(--primary-color);
     position: absolute;
     left: -20px;
+    font-size: 18px;
 }
 
 .modal-footer {
@@ -303,19 +398,15 @@ body {
 .modal-button {
     background: var(--primary-color);
     color: white;
-    border: none;
     padding: 12px 24px;
-    border-radius: var(--radius-md);
     font-weight: 600;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
     gap: 8px;
-    transition: var(--transition-normal);
 }
 
 .modal-button:hover {
-    background: #ff7b1a;
+    background: var(--primary-color-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(255, 107, 0, 0.3);
 }
 
 /* Scrollbar personalizada */
@@ -324,7 +415,7 @@ body {
 }
 
 .modal-body::-webkit-scrollbar-track {
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.05);
     border-radius: 4px;
 }
 
@@ -334,7 +425,7 @@ body {
 }
 
 .modal-body::-webkit-scrollbar-thumb:hover {
-    background: #ff7b1a;
+    background: var(--primary-color-hover);
 }
 
 /* Footer */
@@ -342,14 +433,30 @@ body {
     text-align: center;
     padding: 20px;
     background: rgba(0, 0, 0, 0.3);
+    border-top: 1px solid rgba(255, 255, 255, 0.03);
 }
 
 .footer-content {
     color: var(--text-secondary);
     font-size: 14px;
+    transition: color var(--transition-fast);
+}
+
+.footer-content:hover {
+    color: var(--text-color);
 }
 
 /* Media Queries */
+@media (max-width: 768px) {
+    .form-container {
+        padding: 35px 25px;
+    }
+    
+    .modal-content {
+        margin: 30px auto;
+    }
+}
+
 @media (max-width: 480px) {
     .form-container {
         padding: 30px 20px;
@@ -385,4 +492,15 @@ body {
     .modal-header h2 {
         font-size: 20px;
     }
+}
+
+/* Animações e transições suaves */
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+.connect-button:not(:disabled):active {
+    animation: pulse 0.3s ease;
 }
