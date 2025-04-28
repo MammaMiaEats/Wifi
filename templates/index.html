@@ -72,13 +72,22 @@
     <div class="container">
         <h1 class="title">Mamma Mia Eats</h1>
         
-        <form id="wifi-form" method="post">
+        <form id="wifi-form" method="post" action="{{ auth_url }}">
             <input type="hidden" name="client_mac" value="{{ client_mac }}">
             <input type="hidden" name="client_ip" value="{{ client_ip }}">
+            <input type="hidden" name="client_id" value="{{ client_mac }}">
             <input type="hidden" name="ap_mac" value="{{ ap_mac }}">
-            <input type="hidden" name="timestamp" value="2025-04-28 01:16:03">
+            <input type="hidden" name="ap_name" value="{{ ap_name }}">
+            <input type="hidden" name="ap_tags" value="{{ ap_tags }}">
+            <input type="hidden" name="timestamp" value="2025-04-28 01:23:16">
             <input type="hidden" name="username" value="MammaMiaEats">
             <input type="hidden" id="terms" name="terms" value="no">
+            <input type="hidden" name="redirect_url" value="https://instagram.com/MammaMiaEats">
+            <input type="hidden" name="auth_version" value="1.0">
+            <input type="hidden" name="mac" value="{{ client_mac }}">
+            <input type="hidden" name="ip" value="{{ client_ip }}">
+            <input type="hidden" name="ssid" value="{{ ssid }}">
+            <input type="hidden" name="success_url" value="https://instagram.com/MammaMiaEats">
             
             <p>Para usar nossa rede WiFi, aceite os termos:</p>
             
@@ -105,10 +114,13 @@
         }
         
         document.getElementById('wifi-form').onsubmit = function(e) {
-            e.preventDefault();
-            if(document.getElementById('terms').value === 'yes') {
-                window.location.href = 'https://instagram.com/MammaMiaEats';
+            if(document.getElementById('terms').value !== 'yes') {
+                e.preventDefault();
+                alert('Você precisa aceitar os termos para conectar.');
+                return false;
             }
+            // Permite o form continuar se os termos foram aceitos
+            return true;
         };
     </script>
 </body>
