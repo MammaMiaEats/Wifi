@@ -73,44 +73,54 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Submissão do formulário
     elements.form.addEventListener('submit', async (e) => {
-        e.preventDefault();
+    e.preventDefault();
+    
+    if (!state.termsAccepted) {
+        UI.showError('Você precisa aceitar os termos de uso para continuar.');
+        return;
+    }
+    if (state.isConnecting) return;
+    
+    state.isConnecting = true;
+    UI.setLoading(true);
 
-        if (!state.termsAccepted) {
-            return UI.showError('Você precisa aceitar os termos de uso para continuar.');
+    try {
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), 7000); // 7 segundos
+        
+        const formData = new FormData(elements.form);
+        const response = await fetch(CONFIG.urls.connect, {
+            method: 'POST',
+            body: formData,
+            signal: controller.signal
+        });
+        
+        clearTimeout(timeout);
+
+        if (!response.ok) {
+            throw new Error(`Erro de conexão (${response.status})`);
         }
 
-        if (state.isConnecting) return;
-
-        state.isConnecting = true;
-        UI.setLoading(true);
-
-        try {
-            const formData = new FormData(elements.form);
-            const response = await fetch(CONFIG.urls.connect, {
-                method: 'POST',
-                body: formData
-            });
-
-            if (!response.ok) {
-                throw new Error(`Erro de conexão (${response.status})`);
-            }
-
-            const data = await response.json();
-
-            if (data.success) {
-                window.location.href = data.redirect_url || CONFIG.urls.redirect;
-            } else {
-                throw new Error(data.message || 'Erro ao conectar');
-            }
-
-        } catch (error) {
-            console.error('Erro:', error);
-            UI.showError(error.message);
-        } finally {
-            state.isConnecting = false;
-            UI.setLoading(false);
+        const data = await response.json();
+        
+        if (data.success) {
+            window.location.href = data.redirect_url || CONFIG.urls.redirect;
+        } else {
+            throw new Error(data.message || 'Erro ao conectar');
         }
-    });
+    } catch (error) {
+        console.error('Erro:', error);
+        if (error.name === 'AbortError') {
+            UI.showError('Tempo de conexão excedido. Tente novamente.');
+        } else {
+            UI.showError(error.message || 'Erro ao conectar. Tente novamente.');
+        }
+    } finally {
+        state.isConnecting = false;
+        UI.setLoading(false);
+    }
+});
+
 
     // Eventos do Modal
     elements.termsLink.addEventListener('click', (e) => {
