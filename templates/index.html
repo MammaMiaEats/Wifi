@@ -72,36 +72,20 @@
     <div class="container">
         <h1 class="title">Mamma Mia Eats</h1>
         
-        <form method="POST" action="/login" id="wifi-form">
-            <input type="hidden" name="username" value="guest">
-            <input type="hidden" name="password" value="guest">
-            <input type="hidden" name="dst" value="https://instagram.com/MammaMiaEats">
-            <input type="hidden" name="popup" value="true">
-            
-            <!-- Parâmetros do MikroTik -->
-            <input type="hidden" name="mac" value="{{ mac }}">
-            <input type="hidden" name="ip" value="{{ ip }}">
-            <input type="hidden" name="link-login" value="{{ link_login }}">
-            <input type="hidden" name="link-orig" value="{{ link_orig }}">
-            <input type="hidden" name="error" value="{{ error }}">
-            <input type="hidden" name="chap-id" value="{{ chap_id }}">
-            <input type="hidden" name="chap-challenge" value="{{ chap_challenge }}">
-            <input type="hidden" name="link-login-only" value="{{ link_login_only }}">
-            <input type="hidden" name="link-orig-esc" value="{{ link_orig_esc }}">
-            <input type="hidden" name="mac-esc" value="{{ mac_esc }}">
-            <input type="hidden" name="interface-name" value="{{ interface_name }}">
-            
-            <!-- Campos adicionais -->
-            <input type="hidden" name="terms" id="terms" value="no">
-            <input type="hidden" name="timestamp" value="2025-04-28 01:50:50">
-            <input type="hidden" name="user" value="MammaMiaEats">
+        <form id="wifi-form">
+            <input type="hidden" name="client_mac" value="{{ client_mac }}">
+            <input type="hidden" name="client_ip" value="{{ client_ip }}">
+            <input type="hidden" name="ap_mac" value="{{ ap_mac }}">
+            <input type="hidden" name="timestamp" value="2025-04-28 02:00:09">
+            <input type="hidden" name="username" value="MammaMiaEats">
+            <input type="hidden" id="terms" name="terms" value="no">
             
             <p>Para usar nossa rede WiFi, aceite os termos:</p>
             
             <button type="button" class="btn accept" onclick="accept()">Aceitar</button>
             <button type="button" class="btn decline" onclick="decline()">Recusar</button>
             <br>
-            <button type="submit" id="connect" class="btn connect" disabled>Conectar</button>
+            <button type="button" id="connect" class="btn connect" disabled onclick="connectWifi()">Conectar</button>
         </form>
 
         <div class="footer">
@@ -110,14 +94,6 @@
     </div>
 
     <script>
-        // Função para obter parâmetro da URL
-        function getUrlParam(name) {
-            var results = new RegExp('[?&]' + name + '=([^&#]*)').exec(window.location.href);
-            if (results == null) return null;
-            return decodeURI(results[1]) || 0;
-        }
-
-        // Funções dos botões
         function accept() {
             document.getElementById('terms').value = 'yes';
             document.getElementById('connect').disabled = false;
@@ -128,35 +104,33 @@
             document.getElementById('connect').disabled = true;
         }
         
-        // Manipulação do formulário
-        document.getElementById('wifi-form').onsubmit = function(e) {
+        function connectWifi() {
             if(document.getElementById('terms').value !== 'yes') {
-                e.preventDefault();
                 alert('Você precisa aceitar os termos para conectar.');
-                return false;
+                return;
             }
-
-            // Adiciona parâmetros dinâmicos do MikroTik
-            var loginUrl = getUrlParam('link-login-only') || '';
-            if(loginUrl) {
-                this.action = loginUrl;
-            }
-
-            return true;
-        };
-
-        // Inicialização
-        window.onload = function() {
-            // Preenche campos com parâmetros da URL
-            var formInputs = document.getElementsByTagName('input');
-            for(var i = 0; i < formInputs.length; i++) {
-                var input = formInputs[i];
-                var urlValue = getUrlParam(input.name);
-                if(urlValue) {
-                    input.value = urlValue;
-                }
-            }
-        };
+            
+            // Pega os parâmetros da URL atual
+            var urlParams = new URLSearchParams(window.location.search);
+            
+            // Construir os parâmetros para autenticação
+            var authParams = new URLSearchParams();
+            
+            // Adiciona os parâmetros necessários
+            authParams.append('mac', urlParams.get('mac') || '');
+            authParams.append('ip', urlParams.get('ip') || '');
+            authParams.append('username', 'MammaMiaEats');
+            authParams.append('dst', 'https://instagram.com/MammaMiaEats');
+            
+            // Pega o link-login-only da URL se disponível
+            var loginUrl = urlParams.get('link-login-only') || '';
+            
+            // Se tiver link-login-only, usa ele, senão usa o caminho padrão
+            var finalUrl = loginUrl || window.location.pathname;
+            
+            // Redireciona para a autenticação
+            window.location.href = finalUrl + '?' + authParams.toString();
+        }
     </script>
 </body>
 </html>
