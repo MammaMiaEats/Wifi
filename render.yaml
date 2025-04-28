@@ -3,15 +3,30 @@ services:
     name: mammamia-wifi-portal
     env: python
     buildCommand: pip install -r requirements.txt
-    startCommand: gunicorn app:app
+    startCommand: gunicorn app:app --config gunicorn.conf.py
     envVars:
       - key: PYTHON_VERSION
         value: 3.11.0
       - key: FLASK_ENV
         value: production
+      - key: DEBUG
+        value: false
       - key: SECRET_KEY
-        value: mammamia_wifi_portal_key_2025
+        sync: false  # Para usar o secret do Render
       - key: REDIRECT_URL
-        value: https://instagram.com/MammaMiaCuruca
-    healthCheckPath: /health
+        value: https://instagram.com/MammaMiaEats
+      - key: WIFI_USERNAME
+        value: MammaMiaEats
+      - key: WIFI_PASSWORD
+        sync: false  # Para usar o secret do Render
+      - key: MAX_REQUESTS_PER_MINUTE
+        value: 30
+      - key: SESSION_TIMEOUT
+        value: 7200
+    healthCheckPath: /status
     autoDeploy: true
+    scaling:
+      minInstances: 1
+      maxInstances: 3
+      targetMemoryPercent: 80
+      targetCPUPercent: 70
