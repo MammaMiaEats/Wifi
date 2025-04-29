@@ -1,0 +1,17 @@
+sequenceDiagram
+    participant U as Usuário
+    participant R as Roteador AP 310
+    participant P as Portal Captivo
+    participant RA as Servidor RADIUS (10.0.0.1)
+    
+    U->>R: Conecta ao WiFi "Mamma Mia Eats"
+    R->>P: Redireciona para Portal Captivo
+    P->>U: Exibe página com Termos de Uso
+    U->>P: Aceita Termos de Uso
+    U->>P: Clica em "Conectar"
+    P->>RA: Envia pacote Access-Request (MAC, IP)
+    RA->>P: Responde com Access-Accept
+    P->>U: Exibe modal "Conectando..."
+    P->>R: Autoriza acesso do usuário
+    R->>U: Libera acesso à internet
+    P->>U: Redireciona para Instagram @MammaMiaCuruca
