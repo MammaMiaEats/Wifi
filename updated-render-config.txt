@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: mamma-mia-captive-portal
+    env: node
+    buildCommand: npm install && node prestart.js
+    startCommand: node server.js
+    envVars:
+      - key: PORT
+        value: 10000
+      - key: NODE_ENV
+        value: production

@@ -4,9 +4,10 @@
   "description": "Portal Captivo para Mamma Mia Eats",
   "main": "server.js",
   "scripts": {
+    "prestart": "node prestart.js",
     "start": "node server.js",
     "dev": "nodemon server.js",
-    "build": "echo 'Build completed'"
+    "build": "node prestart.js"
   },
   "dependencies": {
     "body-parser": "^1.20.2",
